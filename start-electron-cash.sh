@@ -1,5 +1,5 @@
 #!/bin/bash
-pip3 list --format=legacy --outdated
+pip3 list --outdated
 git fetch
 a=`git describe --tags`
 b=`curl https://api.github.com/repos/fyookball/electrum/releases/latest -s|jq .name -r`
