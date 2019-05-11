@@ -2,7 +2,7 @@
 pip3 list --outdated
 git fetch
 a=`git describe --tags`
-b=`curl https://api.github.com/repos/Electron-Cash/Electron-Cash/releases/latest -s|jq .name -r`
+b=`curl https://api.github.com/repos/Electron-Cash/Electron-Cash/releases/latest -s|jq .tag_name -r`
 if [ "$a" == "$b" ]; then
 ./electron-cash
 else
