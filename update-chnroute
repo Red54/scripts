@@ -1,0 +1,21 @@
+#!/bin/sh
+
+NAME=chinadns
+
+year=`TZ=-5 date +%Y`
+day=`TZ=19 date +%Y%m%d`
+file=delegated-apnic-$day
+
+cd /tmp
+wget -O- http://ftp.apnic.net/apnic/stats/apnic/$year/$file.gz | gunzip > $file
+wget -O- http://ftp.apnic.net/apnic/stats/apnic/$year/$file.md5.gz | gunzip > $file.md5
+
+if md5sum -c $file.md5; then
+	gzip -f /etc/chinadns_chnroute.txt
+	awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' $file > /etc/chinadns_chnroute.txt
+fi
+
+rm $file
+rm $file.md5
+
+/etc/init.d/$NAME restart
