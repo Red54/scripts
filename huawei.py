@@ -6,7 +6,7 @@ url = 'https://openapi.vmall.com/mcp/queryPrd?lang=zh-CN&country=CN&portal=1&key
 vmall = 'https://www.vmall.com/product/%s.html'
 
 r = requests.get(url)
-phones = re.findall('productId":(.*?),', r.text)
+phones = re.findall('productId":(\d*)', r.text)
 for x in phones:
     purl = vmall % x
     pr = requests.get(purl)
@@ -15,6 +15,6 @@ for x in phones:
         print(purl)
         title = re.findall('title>(.*)</title', text)[0]
         print(title)
-        ir = re.findall('(.*红外.*)', text)
+        ir = re.findall('(\S*红外\S*)', text)
         print(ir)
         print()
