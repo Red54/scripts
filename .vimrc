@@ -5,3 +5,4 @@ se dir=~/.vim
 se bdir=~/.vim
 se udir=~/.vim
 se vdir=~/.vim
+colo murphy
