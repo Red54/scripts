@@ -21,5 +21,5 @@ for x in f:
         bdiff = abs(int(color[0][3]) - b)
         diff = rdiff + gdiff + bdiff
         sqrt = math.sqrt(rdiff ** 2 + gdiff ** 2 + bdiff ** 2)
-        if diff < d:
+        if diff <= d:
             print(color[0], diff, sqrt)
