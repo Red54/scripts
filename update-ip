@@ -2,18 +2,31 @@
 
 NAME=shadowsocks
 
+main=$(uci get $NAME.@transparent_proxy[0].main_server)
+oldip=$(uci get $NAME.$main.server)
+
 for server in $(uci -n export $NAME | awk '$2=/servers/{print substr($3,2,9)}'); do
-    host=$(uci get $NAME.$server.host 2>/dev/null)
-    if [ -n "$host" ]; then
-        for ip in $(nslookup $host 1.2.4.8 | awk '/Address /{print $3}' 2>/dev/null); do
-	    echo $host
-	    echo $ip
-            uci set $NAME.$server.server="$ip"
-            break
-        done
-    fi
+	host=$(uci get $NAME.$server.host 2>/dev/null)
+	if [ -n "$host" ]; then
+		for ip in $(nslookup $host 101.6.6.6#5353 | awk '/Address /{print $3}' 2>/dev/null); do
+			echo $host
+			echo $ip
+			uci set $NAME.$server.server="$ip"
+			break
+		done
+	fi
 done
 
 uci commit $NAME
 
-pidof ss-redir >/dev/null || /etc/init.d/$NAME reload
+reload=false
+
+test $(uci get $NAME.$main.server) = $oldip || reload=true
+
+echo $reload
+
+pidof ss-redir >/dev/null || reload=true
+
+echo $reload
+
+$reload && /etc/init.d/$NAME reload

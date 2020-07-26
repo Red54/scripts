@@ -7,15 +7,21 @@ day=`TZ=19 date +%Y%m%d`
 file=delegated-apnic-$day
 
 cd /tmp
-wget -O- http://ftp.apnic.net/apnic/stats/apnic/$year/$file.gz | gunzip > $file
-wget -O- http://ftp.apnic.net/apnic/stats/apnic/$year/$file.md5.gz | gunzip > $file.md5
+wget -O- https://ftp.apnic.net/stats/apnic/$year/$file.gz | gunzip > $file
+wget -O- https://ftp.apnic.net/stats/apnic/$year/$file.md5.gz | gunzip > $file.md5
 
 if md5sum -c $file.md5; then
+	gzip -f /etc/v2ray/chnroute.txt
+	awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' $file > /etc/v2ray/chnroute.txt
+	gzip -f /etc/v2ray/chnroute6.txt
+	awk -F\| '/CN\|ipv6/ { printf("%s/%s\n", $4, $5) }' $file > /etc/v2ray/chnroute6.txt
+	cp /etc/v2ray/chnroute.txt .
+	echo '127.0.1.0/24' >> chnroute.txt
 	gzip -f /etc/chinadns_chnroute.txt
-	awk -F\| '/CN\|ipv4/ { printf("%s/%d\n", $4, 32-log($5)/log(2)) }' $file > /etc/chinadns_chnroute.txt
+	sort -V chnroute.txt > /etc/chinadns_chnroute.txt
 fi
 
 rm $file
 rm $file.md5
 
-/etc/init.d/$NAME restart
+/etc/init.d/$NAME reload
